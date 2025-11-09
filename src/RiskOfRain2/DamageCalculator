@@ -1,0 +1,22 @@
+module RiskOfRain2.DamageCalculator where
+
+import Prelude
+import RiskOfRain2.Types (GameState, ItemType(..), defaultGameState)
+import RiskOfRain2.ProcChain (calculateProcChain, defaultItemBuilder)
+
+-- Calculate total damage multiplier
+calculateTotalDamage :: GameState -> Number -> Int -> Number
+calculateTotalDamage state procCoefficient hits =
+  calculateProcChain defaultItemBuilder state procCoefficient hits
+
+-- Example usage with your test case
+testDamageCalculation :: Number
+testDamageCalculation =
+  let testState = defaultGameState
+        { inventory = Map.fromFoldable
+            [ (ATG, 1)
+            , (Polylute, 2)
+            , (ChargedPerforator, 1)
+            ]
+        }
+  in calculateTotalDamage testState 1.0 1
