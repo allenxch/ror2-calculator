@@ -1,3 +1,4 @@
+# .github/workflows/deploy.yml
 name: Deploy to GitHub Pages
 
 on:
@@ -5,18 +6,24 @@ on:
     branches: [ main ]
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v2
-    
-    - uses: cachix/install-nix-action@v20
-      with:
-        nix_path: nixpkgs=channel:nixos-unstable
-    
-    - run: nix-shell --run "spago bundle-app --main Main --to docs/app.js"
-    
-    - uses: peaceiris/actions-gh-pages@v3
+    - uses: actions/checkout@v4
+
+    - name: Setup PureScript
+      run: |
+        npm install -g purescript spago
+
+    - name: Install dependencies and build
+      run: |
+        spago install
+        spago build
+        spago bundle-app --main Main --to docs/app.js
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./docs
